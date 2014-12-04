@@ -67,6 +67,13 @@ def m_func(A, x_k, b, step_length, x):
     print 'part_3',part_3
     m_value = part_1 + part_2 + part_3
     return m_value
+
+#objective function
+def obj_func(A,x,b,lmd):
+    f_value = math.pow(LA.norm(np.dot(A,x.T) - b),2) / 2
+    g_value = lmd * LA.norm(x,1)
+    value = f_value + g_value
+    return value
 #--------------------------------------------------------------------------------
 
 if __name__ == '__main__':
@@ -93,9 +100,14 @@ if __name__ == '__main__':
     lmd = math.sqrt(2*n*math.log(p))  #lambda in LOSSA objective function
     print 'lambda',lmd
     #step_length = 1/LA.norm(np.dot(A.T,A))   
-    step_length = lmd
+    #step_length = lmd
+    step_length = 10
+    outfile = open('pgd.output','w')
+
 
     while(1):
+        obj_value = obj_func(A,x_k,b,lmd)
+        outfile.write(str(obj_value)+'\n')
         while(1):
             print 'x_k',x_k
             y = gradient_descent(x_k, step_length, A, b)
@@ -110,12 +122,13 @@ if __name__ == '__main__':
                 break
             step_length = step_length * 0.5
             print '********************************************'
-        if f_func(A,x_k,b) < f_func(A,x_k_plus_1,b):
+        if f_func(A,x_k,b) <= f_func(A,x_k_plus_1,b):
             break
         else:
             x_k =  x_k_plus_1
     
     print opt_x
+    print e
     print x_k_plus_1
 
 
